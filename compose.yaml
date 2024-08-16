@@ -1,0 +1,37 @@
+services:
+  db:
+    hostname: pgvector_db
+    container_name: pgvector_db_container
+    image: ankane/pgvector
+    ports:
+      - 5432:5432
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=vector
+      - POSTGRES_USER=userexample
+      - POSTGRES_PASSWORD=passexample
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ./local_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d vector"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    restart: unless-stopped
+    ports:
+      - 5016:80
+    user: "$UID:$GID"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=example@gmail.com
+      - PGADMIN_DEFAULT_PASSWORD=example
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+
+#Ejecuta un script en la bd vector(que tiene la extension pgvector)
+#  docker exec -it pgvector_db_container psql -U user -d vector -c '\i /var/lib/postgresql/data/airbnb/airbnb_listings.sql'
+#Ejecutar un csv que contiene los datos con sus embeddings delimitados por '^'
+#docker exec -it pgvector_db_container psql -U user -d vector -c "\copy airbnb_listing FROM /var/lib/postgresql/data/airbnb/airbnb_listings_with_embeddings.csv with DELIMITER '^' CSV"
