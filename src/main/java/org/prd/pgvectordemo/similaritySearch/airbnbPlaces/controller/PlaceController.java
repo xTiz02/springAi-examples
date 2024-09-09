@@ -1,7 +1,7 @@
-package org.prd.pgvectordemo.vectorConsult.controller;
+package org.prd.pgvectordemo.similaritySearch.airbnbPlaces.controller;
 
-import org.prd.pgvectordemo.vectorConsult.model.Place;
-import org.prd.pgvectordemo.vectorConsult.service.EmbeddingService;
+import org.prd.pgvectordemo.similaritySearch.airbnbPlaces.model.Place;
+import org.prd.pgvectordemo.similaritySearch.airbnbPlaces.service.EmbeddingService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

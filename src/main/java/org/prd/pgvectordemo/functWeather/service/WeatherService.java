@@ -25,8 +25,7 @@ public class WeatherService implements Function<WeatherService.Request,WeatherSe
 
 
     public WeatherService() {
-        log.info("Weather API URL: {}", apiUrl);
-        log.info("Weather API Key: {}", apiKey);
+
         this.restClient = RestClient.create(apiUrl);
     }
 

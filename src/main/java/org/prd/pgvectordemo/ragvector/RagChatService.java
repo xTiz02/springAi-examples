@@ -11,6 +11,8 @@ import org.springframework.ai.chat.prompt.SystemPromptTemplate;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.ai.vectorstore.PgVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,10 +30,10 @@ public class RagChatService {
             DOCUMENTS:
             {documents}
             """;
-    private final PgVectorStore pgVectorStore;
+    private final VectorStore pgVectorStore;
     private final OllamaChatModel ollamaChatModel;
 
-    public RagChatService(PgVectorStore pgVectorStore, OllamaChatModel ollamaChatModel) {
+    public RagChatService(@Qualifier("pgVectorStore") VectorStore pgVectorStore, OllamaChatModel ollamaChatModel) {
         this.pgVectorStore = pgVectorStore;
         this.ollamaChatModel = ollamaChatModel;
     }

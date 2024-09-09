@@ -1,8 +1,9 @@
-package org.prd.pgvectordemo.vectorConsult.service;
+package org.prd.pgvectordemo.similaritySearch.airbnbPlaces.service;
 
-import org.prd.pgvectordemo.vectorConsult.model.Place;
+import org.prd.pgvectordemo.similaritySearch.airbnbPlaces.model.Place;
 import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
 import org.springframework.jdbc.core.simple.JdbcClient.StatementSpec;
@@ -14,17 +15,15 @@ public class EmbeddingService {
     private static final float MATCH_THRESHOLD = 0.7f;
     private static final int MATCH_CNT = 3;
 
-    @Autowired
-    private JdbcClient jdbcClient;
+    private final JdbcClient jdbcClient;
 
-    @Autowired
-    private EmbeddingModel aiClient;
+    private final EmbeddingModel aiClient;
 
-
-    public EmbeddingService(JdbcClient jdbcClient, EmbeddingModel aiClient) {
+    public EmbeddingService(@Qualifier("jdbcClientVector") JdbcClient jdbcClient,@Qualifier("embeddingModel") EmbeddingModel aiClient) {
         this.jdbcClient = jdbcClient;
         this.aiClient = aiClient;
     }
+
 
     public List<Place> searchPlaces(String prompt) {
         float[] promptEmbedding = aiClient.embed(prompt);
@@ -39,5 +38,9 @@ public class EmbeddingService {
                 .param("match_cnt", MATCH_CNT);
 
         return query.query(Place.class).list();
+
     }
+    /*
+    * De un tabla sql traer los datos con jdbcClient crear un Document con el content con la data relevante y en la metadata un json de otros datos
+    * Al hacer el prompt transformarlo en lista float(embed) y hacer la busquedad con sql pasando como parámetro el embed, retorna Documents */
 }

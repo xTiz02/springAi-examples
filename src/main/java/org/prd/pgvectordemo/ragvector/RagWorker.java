@@ -11,6 +11,7 @@ import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.PgVectorStore;
+import org.springframework.ai.vectorstore.VectorStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,21 +20,23 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Vector;
 
 @Slf4j
 @Component
 public class RagWorker {
 
-    @Autowired
-    @Qualifier("pgVectorStoreToRag")
-    private PgVectorStore vectorStore;
-
     @Value("classpath:/static/PrdImportsa.pdf")
     private Resource pdfResource;
 
-    @Autowired
-    private JdbcClient jdbcClient;
+    private final VectorStore vectorStore;
 
+    private final JdbcClient jdbcClient;
+
+    public RagWorker(@Qualifier("pgVectorStore") VectorStore vectorStore, @Qualifier("jdbcClientVector") JdbcClient jdbcClient) {
+        this.vectorStore = vectorStore;
+        this.jdbcClient = jdbcClient;
+    }
 
 
     @PostConstruct
@@ -63,7 +66,7 @@ public class RagWorker {
                                 .build())
                         .withPagesPerDocument(1)//cada pagina es un documento
                         .build());
-        var textSplitter = new TokenTextSplitter();
+        var textSplitter = new TokenTextSplitter();//separar el texto de los documentos en tokens (palabras) para crear vectores
         //agregar metadata a los documentos
         List<Document> documents = reader.get().stream().peek(document -> {
             document.getMetadata().put("characters", document.getContent().length());
